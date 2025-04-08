@@ -6,6 +6,7 @@ google-auth-oauthlib==1.2.1
 google-auth-httplib2==0.2.0
 streamlit-oauth==0.1.14
 tensorflow==2.18.0
+torch==2.2.1  # Latest stable version with Python 3.12 support
 
 # Essential Data/Database
 faiss-cpu==1.10.0
