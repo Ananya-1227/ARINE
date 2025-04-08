@@ -1,3 +1,7 @@
+sqlite3  # optional; sqlite is in stdlib but some hosts want this line
+flask
+python-dotenv
+google-generativeai
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
