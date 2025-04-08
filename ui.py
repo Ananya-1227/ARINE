@@ -30,7 +30,7 @@ MERCHANT_SALT = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDULOIP8oYe4bn
 
 CLIENT_ID = "5918448459-qvpri389qnp5ekhbv0esoskq8b6b5bnk.apps.googleusercontent.com"
 CLIENT_SECRET = "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"
-REDIRECT_URI = "http://localhost:8501"
+REDIRECT_URI = "http://avipalglobaltech.streamlit.app"
 
 AUTHORIZE_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
