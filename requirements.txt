@@ -4,6 +4,7 @@ google-generativeai
 google-auth==2.38.0
 google-auth-oauthlib==1.2.1
 google-auth-httplib2==0.2.0
+streamlit-oauth==0.1.0
 
 # Essential Data/Database
 faiss-cpu==1.10.0
