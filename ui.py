@@ -1,0 +1,226 @@
+import streamlit as st
+from streamlit_oauth import OAuth2Component
+from my_search import query_faiss
+from db import (
+    init_db,
+    get_user_by_email,
+    create_user,
+    get_prompt_count,
+    increment_prompt_count,
+    is_user_subscribed,
+    update_subscription,
+    get_chat_history,
+    save_chat
+)
+import os
+import requests
+import base64
+import sqlite3
+import hashlib
+import datetime
+from typing import Optional, Dict, List, Tuple  # Add this import
+
+# Initialize DB
+init_db()
+
+# PayU merchant details
+MERCHANT_KEY = "V6alJT"
+MERCHANT_SALT = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDULOIP8oYe4bnIFX8xdsCxzq6UopwZMNVOKLs8IaMXA1lacMJmaXjgDYPZPfVEHAW18Gk5zNObycolZlBd2JlaNmn5sYQmfFWND0MO24Qp8sgZWU1yERUAJgCII8l9sVDD8H31axa35L7v1VSMAzTsI2gNEteBlCcPz+PFWEu8wMrEFMndGHCS2P7/yPBJnoZbzmU4nfZcYrNEQSndiJTs4F4Utd9dH3F8dO9PzrcDUjB0xdf58uBeRF7Ml/L73lKgf1vsy1YBlcMnN7oR5NvmfAGCxgvBNPh7QAsBSNnJ12rtMSMY7bS8AIh+lr8RFnGngJQcCbD3EvcbB5GF9n1LAgMBAAECggEAONcxVJ5fKeTE1YJUydaLdtbs1Crf8KuxaTfmOQy12VNvW5g7rB3zYOqd+NPtYeqz6PLX7cEeq2yat/w56Xo+Uvmi2F6jDYBfluOQzmkmdepxisDuy3EiFCEaIV6c+wxGm8dQpy+iLW+dazjWZo/xXJV7qYzzqOYctNK3rUWjPJRYcFvNnljMudXw5PlNEtDgVslbwi3l8Lq7Jm5LAKMyD7jnrnWHFNfLcguKRuhTC3jtXOHHPQnLLue3pORYcvbsD6t/jPAtrsBKKxxJncwcRvS1+F2PeBiMav1ZXK0W2xlKrBU3ykWotDSb6eS9540L6aWBdWCpIN7RUzV3ydpZOQKBgQD15bINTf5GbEy4QcYNanVEyaEDZRpmfa39XipXR2dHPH5nKsY4yJty1c+Jt75d2t8p9bureIscTyWPKYL+0kiGqIIZIYiXEK5iGUZICOAXC4ic+ZXtmzKV7+bGD8czik9WEq69ncqAUnuMe6P8bFGhDpHknhMEV9XP5VrQk4swlQKBgQDc5IGXKAXABS09pRbgTcJmIXSS1whwB8GlTZu8xi+6gj+mOzy36WEZFrslqf1kwL/Em21SzE7QfI2EZ4Su//cgBR5iywgIjB6r91m0QuFdcf8PBEnMJkWCPFoQ7qvPZKrcVPLCkvTaEd44CNRY3kNBVAQeQGpEBjJYggY84aYeXwKBgQCMTrNJGi6z2knwfT9YGl2tkWs5d7AXuTDVOKzqPkj1AdSSY3rVncntPYj9aQXLof7if1/FWLPvxE2HIcWoRy6w/2e0lUjOAeuu+AL9SWssWx1pjJR7DqpPmaLRcuFUTGA2mdRxR57rl6T9pPMOLnRpdNnUXEo3mTLcPF+UUgwC/QKBgAGohYCJAGIMp+ZKkv1kGA2EOsfPbXTJ2h5Pkte79SfFSo0I7M/EpMH3dbg2qnxTJh1nvU5d0kmmZbmUvV5C9av73dqIA6tswd4woS/FQMPe0zddpOAveV4c7eAqqoeIDfBRgvELAWORtsVc65svL/oRk2ZWvXV9Rmt7rmhOmVypAoGAPuZowns5Ng3fFEvZlYzKXsurLNY7jmLP24674E/Kg240bziUu2qlsF3v+En/sBfV4Lf7S6GSMvVh+0BKt4l6a+1gIFbV7V4iUsv9JdukhHkD6DuomXXAs63Jym8ZNE4B34/mJXoluO5rPQ3Kc9UguXK4/tCoOTEcdB21mgw33Ew="
+
+
+CLIENT_ID = "5918448459-qvpri389qnp5ekhbv0esoskq8b6b5bnk.apps.googleusercontent.com"
+CLIENT_SECRET = "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"
+REDIRECT_URI = "http://localhost:8501"
+
+AUTHORIZE_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
+TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
+USER_INFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo"
+
+FREE_QUERY_LIMIT = 3
+
+# --- Initialize Session State ---
+def init_session_state():
+    """Initialize all required session state variables."""
+    if "token" not in st.session_state:
+        st.session_state.token = None
+    if "query_count" not in st.session_state:
+        st.session_state.query_count = 0
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+    if "processing_query" not in st.session_state:
+        st.session_state.processing_query = False
+
+init_session_state()
+
+# --- Streamlit Config ---
+st.set_page_config(
+    page_title="ArInE Global",
+    page_icon="🌐",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# --- Background Image ---
+@st.cache_data
+def get_base64_image(image_path: str) -> str:
+    """Convert image to base64 for background."""
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode()
+
+try:
+    base64_image = get_base64_image("logo4.png")
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/jpeg;base64,{base64_image}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+except FileNotFoundError:
+    pass
+
+# --- OAuth Component ---
+oauth2 = OAuth2Component(
+    client_id=CLIENT_ID,
+    client_secret=CLIENT_SECRET,
+    authorize_endpoint=AUTHORIZE_ENDPOINT,
+    token_endpoint=TOKEN_ENDPOINT,
+)
+
+# --- Helper Functions ---
+def verify_payu_payment(txn_id: str) -> bool:
+    """Verify PayU payment status."""
+    hash_str = f"{MERCHANT_KEY}|verify_payment|{txn_id}|{MERCHANT_SALT}"
+    hashh = hashlib.sha512(hash_str.encode()).hexdigest().lower()
+
+    payload = {
+        "key": MERCHANT_KEY,
+        "command": "verify_payment",
+        "var1": txn_id,
+        "hash": hashh
+    }
+
+    try:
+        response = requests.post(
+            "https://info.payu.in/merchant/postservice?form=2",
+            data=payload,
+            timeout=10
+        )
+        response.raise_for_status()
+        return response.json().get("status") == "1"
+    except Exception as e:
+        st.error(f"Payment verification failed: {str(e)}")
+        return False
+
+def fetch_user_info(access_token: str) -> Optional[dict]:
+    """Fetch user info from Google API."""
+    try:
+        response = requests.get(
+            USER_INFO_URL,
+            headers={"Authorization": f"Bearer {access_token}"},
+            timeout=10
+        )
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        st.error(f"Failed to fetch user info: {str(e)}")
+        return None
+
+# --- Main App Logic ---
+def main():
+    st.title("📚🔍 ArInE")
+
+    # --- Google OAuth Flow ---
+    if not st.session_state.token:
+        token = oauth2.authorize_button(
+            name="Continue with Google",
+            redirect_uri=REDIRECT_URI,
+            scope="profile email"
+        )
+        if token:
+            st.session_state.token = token
+            st.rerun()
+        return
+
+    # --- Post-Login Flow ---
+    token = st.session_state.token.get("token") if st.session_state.token else None
+    access_token = token.get("access_token") if token else None
+
+    if not access_token:
+        st.error("Invalid access token. Please log in again.")
+        return
+
+    user_info = fetch_user_info(access_token)
+    if not user_info:
+        return
+
+    email = user_info.get("email")
+    name = user_info.get("name")
+    if not email or not name:
+        st.error("Failed to retrieve user email/name.")
+        return
+
+    # --- Initialize User in DB ---
+    if not get_user_by_email(email):
+        create_user(email, name)
+    st.session_state.query_count = get_prompt_count(email)
+
+    # --- Payment Verification ---
+    if "transaction_id" in st.query_params:
+        txn_id = st.query_params["transaction_id"]
+        if verify_payu_payment(txn_id):
+            update_subscription(email, True)
+            st.success("🎉 Payment verified! You are now a premium subscriber.")
+        else:
+            st.warning("⚠️ Payment verification failed.")
+
+    # --- Subscription Status ---
+    subscribed = is_user_subscribed(email)
+    if subscribed:
+        st.success("✅ Premium User: Unlimited queries.")
+    else:
+        st.info(f"🎓 Free Tier: {st.session_state.query_count}/{FREE_QUERY_LIMIT} queries used.")
+
+    # --- Query Input ---
+    query = st.chat_input("Ask a question...")
+    if query and (subscribed or st.session_state.query_count < FREE_QUERY_LIMIT):
+        with st.spinner("Searching for answers..."):
+            try:
+                answer = query_faiss(query)
+                save_chat(email, query, answer)
+                st.session_state.chat_history.append((query, answer, datetime.now().strftime("%Y-%m-%d %H:%M")))
+
+                if not subscribed:
+                    increment_prompt_count(email)
+                    st.session_state.query_count += 1
+
+                st.success("✅ Answer generated!")
+                st.markdown(f"**Q:** {query}")
+                st.markdown(f"**A:** {answer}")
+            except Exception as e:
+                st.error(f"Failed to process query: {str(e)}")
+    elif query:
+        st.error("🛑 Free limit reached. Please subscribe to continue.")
+        st.link_button("🔗 Subscribe Now", "https://pmny.in/YrI6O1HHr1Na")
+
+    # --- Chat History ---
+    with st.expander("🐂 Previous Queries", expanded=False):
+        history = get_chat_history(email)
+        if history:
+            for i, (q, a, timestamp) in enumerate(reversed(history), 1):
+                with st.container():
+                    st.markdown(f"**Q{i}** ({timestamp}):")
+                    st.markdown(f"> {q}")
+                    st.markdown(f"**Answer:** {a}")
+                    st.markdown("---")
+        else:
+            st.info("No chat history yet.")
+
+if __name__ == "__main__":
+    main()
