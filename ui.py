@@ -18,7 +18,8 @@ import base64
 import sqlite3
 import hashlib
 import datetime
-from typing import Optional, Dict, List, Tuple  # Add this import
+from datetime import datetime 
+from typing import Optional, Dict, List, Tuple  # Add this 
 
 # Initialize DB
 init_db()
@@ -30,13 +31,79 @@ MERCHANT_SALT = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDULOIP8oYe4bn
 
 CLIENT_ID = "5918448459-qvpri389qnp5ekhbv0esoskq8b6b5bnk.apps.googleusercontent.com"
 CLIENT_SECRET = "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"
-REDIRECT_URI = "http://avipalglobaltech.streamlit.app"
+REDIRECT_URI = "http://localhost:8501"
 
 AUTHORIZE_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
 USER_INFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo"
 
-FREE_QUERY_LIMIT = 3
+FREE_QUERY_LIMIT = 100
+
+# --- Streamlit Config ---
+st.set_page_config(
+    page_title="ArInE Global",
+    page_icon="🌐",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+def get_base64_image(image_path: str) -> str:
+    """Convert image to base64 for embedding in HTML."""
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode()
+
+# --- Theme Toggle ---
+st.sidebar.title("🖌️ Appearance")
+st.sidebar.info("""
+**ArInE** (Artificial Intelligence Enabled) is your personal assistant powered by LLMs.
+Use it to query documents, learn insights, and streamline your research.
+""")
+
+# --- Four Feature Blocks ---
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 🧠 Features")
+
+st.sidebar.success("📄 Semantic Search\nFind insights from uploaded content using vector search.")
+st.sidebar.warning("💬 Query Tracking\nTrack free and premium queries per user.")
+st.sidebar.info("🧾 Subscription System\nIntegrated with PayU for secure payments.")
+st.sidebar.error("🌗 Dark/Light Mode\nChoose a comfortable view for your environment.")
+
+theme_choice = st.sidebar.radio("Choose Theme:", ["Light", "Dark"])
+
+if "theme" not in st.session_state:
+    st.session_state.theme = "Light"
+
+st.session_state.theme = theme_choice
+
+# --- Inject Theme CSS ---
+if st.session_state.theme == "Dark":
+    st.markdown("""
+        <style>
+        body {
+            background-color: #0e1117;
+            color: #ffffff;
+        }
+        .stApp {
+            background-color: #0e1117;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+else:
+    # Optional: Keep light background or custom image if desired
+    try:
+        base64_image = get_base64_image("logo4.png")
+        st.markdown(f"""
+            <style>
+            .stApp {{
+                background-image: url("data:image/jpeg;base64,{base64_image}");
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+            }}
+            </style>
+        """, unsafe_allow_html=True)
+    except FileNotFoundError:
+        pass
 
 # --- Initialize Session State ---
 def init_session_state():
@@ -52,13 +119,7 @@ def init_session_state():
 
 init_session_state()
 
-# --- Streamlit Config ---
-st.set_page_config(
-    page_title="ArInE Global",
-    page_icon="🌐",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+
 
 # --- Background Image ---
 @st.cache_data
@@ -138,10 +199,12 @@ def main():
 
     # --- Google OAuth Flow ---
     if not st.session_state.token:
+        st.markdown("<h1 style='text-align:center;'>🔐 Welcome to ArInE</h1>", unsafe_allow_html=True)
         token = oauth2.authorize_button(
             name="Continue with Google",
             redirect_uri=REDIRECT_URI,
-            scope="profile email"
+            scope="profile email",
+            extras_params={"prompt":"select_account consent"}
         )
         if token:
             st.session_state.token = token
