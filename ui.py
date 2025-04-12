@@ -68,7 +68,6 @@ st.sidebar.warning("💬 Query Tracking\nTrack free and premium queries per user
 st.sidebar.info("🧾 Subscription System\nIntegrated with PayU for secure payments.")
 st.sidebar.error("🌗 Dark/Light Mode\nChoose a comfortable view for your environment.")
 
-theme_choice = st.sidebar.radio("Choose Theme:", ["Light", "Dark"])
 
 # --- Initialize Session State ---
 def init_session_state():
