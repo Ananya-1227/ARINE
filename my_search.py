@@ -26,10 +26,10 @@ index = faiss.read_index("chunk_index.faiss")
 with open("chunk_texts.pkl", "rb") as f:
     chunks = pickle.load(f)
 
-# Function to query the FAISS index (returns only top-1 result)
-def query_faiss(query):
+# Function to query the FAISS index
+def query_faiss(query, top_k=3):
     query_vector = get_embedding(query).astype("float32").reshape(1, -1)
-    distances, indices = index.search(query_vector, 1)  # top_k=1
-    result = chunks[indices[0][0]]
-    return result
+    distances, indices = index.search(query_vector, top_k)
+    results = [chunks[i] for i in indices[0]]
+    return "\n\n".join(results) 
 
