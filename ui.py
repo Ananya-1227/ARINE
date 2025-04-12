@@ -257,7 +257,7 @@ def main():
         st.link_button("🔗 Subscribe Now", "https://pmny.in/YrI6O1HHr1Na")
 
     # --- Chat History ---
-    with st.expander("🐂 Previous Queries", expanded=False):
+    with st.expander("Previous Queries", expanded=False):
         history = get_chat_history(email)
         if history:
             for i, (q, a, timestamp) in enumerate(reversed(history), 1):
