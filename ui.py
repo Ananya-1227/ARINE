@@ -248,7 +248,8 @@ def main():
                     st.session_state.query_count += 1
 
                 st.success("✅ Answer generated!")
-                st.markdown(f"**Q:** {query}")
+                st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
+
                 st.markdown(f"**A:** {answer}")
             except Exception as e:
                 st.error(f"Failed to process query: {str(e)}")
