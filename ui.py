@@ -66,7 +66,7 @@ st.sidebar.markdown("### 🧠 Features")
 st.sidebar.success("📄 Semantic Search\nFind insights from uploaded content using vector search.")
 st.sidebar.warning("💬 Query Tracking\nTrack free and premium queries per user.")
 st.sidebar.info("🧾 Subscription System\nIntegrated with PayU for secure payments.")
-st.sidebar.error("🌗 Dark/Light Mode\nChoose a comfortable view for your environment.")
+st.sidebar.error("🌗 This is another heading which you would like to keep.")
 
 
 # --- Initialize Session State ---
