@@ -193,9 +193,18 @@ def main():
         st.error("Failed to retrieve user email/name.")
         return
 
-    # --- Initialize User in DB ---
+    col1,col2=st.columns([8,2])
+    with col1:
+        st.markdown(f"Welcome! , **{name}**")
+    with col2:
+        if st.button("🚪Sign Out"):
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.rerun()
+
+    #----------Initialize User in DB-------------
     if not get_user_by_email(email):
-        create_user(email, name)
+        create_user(email,name)
     st.session_state.query_count = get_prompt_count(email)
 
     # --- Payment Verification ---
