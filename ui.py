@@ -250,7 +250,7 @@ def main():
                 st.success("✅ Answer generated!")
                 st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
 
-                st.markdown(f" <p style='color:black;'>**A:** {answer}</p>",unsafe_allow_html=True)
+                st.markdown(f" <p style='color:black;'>A: {answer}</p>",unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"Failed to process query: {str(e)}")
     elif query:
@@ -265,7 +265,7 @@ def main():
                 with st.container():
                     st.markdown(f"**Q{i}** ({timestamp}):")
                     st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
-                    st.markdown(f" <p style='color:black;'>**A:** {answer}</p>",unsafe_allow_html=True)
+                    st.markdown(f" <p style='color:black;'>A: {answer}</p>",unsafe_allow_html=True)
                     st.markdown("---")
         else:
             st.info("No chat history yet.")
