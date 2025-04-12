@@ -21,6 +21,17 @@ import datetime
 from datetime import datetime 
 from typing import Optional, Dict, List, Tuple  # Add this 
 
+# Hide Streamlit default top menu and footer
+st.markdown("""
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .css-1dp5vir {padding-top: 1rem;}  /* optional: fix top padding */
+    </style>
+""", unsafe_allow_html=True)
+
+
 # Initialize DB
 init_db()
 
