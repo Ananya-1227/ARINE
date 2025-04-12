@@ -70,41 +70,6 @@ st.sidebar.error("🌗 Dark/Light Mode\nChoose a comfortable view for your envir
 
 theme_choice = st.sidebar.radio("Choose Theme:", ["Light", "Dark"])
 
-if "theme" not in st.session_state:
-    st.session_state.theme = "Light"
-
-st.session_state.theme = theme_choice
-
-# --- Inject Theme CSS ---
-if st.session_state.theme == "Dark":
-    st.markdown("""
-        <style>
-        body {
-            background-color: #0e1117;
-            color: #ffffff;
-        }
-        .stApp {
-            background-color: #0e1117;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-else:
-    # Optional: Keep light background or custom image if desired
-    try:
-        base64_image = get_base64_image("logo4.png")
-        st.markdown(f"""
-            <style>
-            .stApp {{
-                background-image: url("data:image/jpeg;base64,{base64_image}");
-                background-size: cover;
-                background-position: center;
-                background-attachment: fixed;
-            }}
-            </style>
-        """, unsafe_allow_html=True)
-    except FileNotFoundError:
-        pass
-
 # --- Initialize Session State ---
 def init_session_state():
     """Initialize all required session state variables."""
