@@ -13,6 +13,8 @@ from db import (
     get_chat_history,
     save_chat
 )
+import string
+from collections import Counter
 import os
 import requests
 import base64
