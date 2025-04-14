@@ -10,7 +10,7 @@ import google.generativeai as genai
 # ========== SETUP ==========
 
 # Load Gemini API
-genai.configure(api_key="YOUR_GEMINI_API_KEY")  # <-- Replace with your key
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))  # <-- Replace with your key
 model_gemini = genai.GenerativeModel("gemini-1.5-pro-latest")  # Or a more suitable model
 
 # Load embedding model
