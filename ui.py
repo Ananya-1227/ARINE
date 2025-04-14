@@ -321,7 +321,7 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = get_user_chat_history(email)
     with  st.expander("✂️ Summarize Answer"):
-            a_short = summarize_text(a)
+            a_short = summarize_text(answer)
             st.markdown(f"<p style='color:black;'>📌 {a_short}</p>", unsafe_allow_html=True)
     if st.session_state.chat_history:
         with st.expander("💬 Chat History"):
