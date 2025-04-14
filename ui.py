@@ -255,22 +255,22 @@ def main():
                 # context = query_faiss(query)
                 # answer = gemini_answer(f"Based on this context:\n{context}\n\nAnswer this question:\n{query
                 answer = gemini_answer(query)
-                ans=truncate_text(answer,word_limit=100)
+        
                 # Black colored display with truncation
                 st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='color:black;'><strong>A:</strong> {ans}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='color:black;'><strong>A:</strong> {answer}</p>", unsafe_allow_html=True)
                 # Save to history (also in black)
-                st.session_state.chat_history.append((query, ans))
-                # Optional: Add "Show Full Answer" button
-                if 'show_full_answer' not in st.session_state:
-                    st.session_state.show_full_answer = False
+                st.session_state.chat_history.append((query, answer))
+                # # Optional: Add "Show Full Answer" button
+                # if 'show_full_answer' not in st.session_state:
+                #     st.session_state.show_full_answer = False
                 
-                if not st.session_state.show_full_answer and len(answer.split()) > 100:
-                    if st.button("🔍 Show Full Answer"):
-                        st.session_state.show_full_answer = True
+                # if not st.session_state.show_full_answer and len(answer.split()) > 100:
+                #     if st.button("🔍 Show Full Answer"):
+                #         st.session_state.show_full_answer = True
                 
-                if st.session_state.show_full_answer:
-                    st.markdown(f"<p style='color:black;'><strong>Full A:</strong> {answer}</p>", unsafe_allow_html=True)
+                # if st.session_state.show_full_answer:
+                #     st.markdown(f"<p style='color:black;'><strong>Full A:</strong> {answer}</p>", unsafe_allow_html=True)
                                 
 
                 if not subscribed:
