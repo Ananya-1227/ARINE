@@ -2,42 +2,29 @@ import os
 import requests
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
 def gemini_answer(prompt):
-    # Get the API key from the environment variable
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
-        return "❌ API key is missing. Please check your .env file."
+        return "❌ API key missing. Check .env file."
 
-    # ✅ CORRECT MODEL: Use 'gemini-pro' (text model) or 'gemini-pro-vision' (multimodal)
-    model_id = "models/gemini-pro"  
+    # ✅ Use the correct model name (Gemini 1.5 Pro or Gemini 1.0 Pro)
+    model_id = "gemini-pro"  # or "gemini-1.5-pro-latest" for newer models
 
-    # ✅ CORRECT API ENDPOINT (v1beta)
-    url = f"https://generativelanguage.googleapis.com/v1beta/{model_id}:generateContent?key={api_key}"
+    # ✅ Updated API endpoint (v1beta or v1)
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_id}:generateContent?key={api_key}"
 
-    headers = {
-        "Content-Type": "application/json"
-    }
+    headers = {"Content-Type": "application/json"}
+    data = {"contents": [{"parts": [{"text": prompt}]}]}
 
-    # Prepare the request data
-    data = {
-        "contents": [{
-            "parts": [{"text": prompt}]
-        }]
-    }
-
-    # Send the POST request to Gemini API
     response = requests.post(url, headers=headers, json=data)
 
-    # Check for success
     if response.status_code == 200:
         return response.json()['candidates'][0]['content']['parts'][0]['text']
     else:
         return f"❌ Gemini Error: {response.status_code} {response.text}"
 
-# Test the function
+# Test
 if __name__ == "__main__":
-    test_prompt = "Explain quantum computing in simple terms."
-    print(gemini_answer(test_prompt))
+    print(gemini_answer("How to become a HyperAchiever?"))
