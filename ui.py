@@ -279,12 +279,13 @@ def main():
     with st.expander("Previous Queries", expanded=False):
         history = get_chat_history(email)
         if history:
-            for i, (q, a, timestamp) in enumerate(reversed(history), 1):
-                with st.container():
-                    st.markdown(f"**Q{i}** ({timestamp}):")
-                    st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
-                    st.markdown(f" <p style='color:black;'>A: {answer}</p>",unsafe_allow_html=True)
-                    st.markdown("---")
+          for i, (q, a, timestamp) in enumerate(reversed(history), 1):
+            with st.container():
+                st.markdown(f"**Q{i}** ({timestamp}):")
+                st.markdown(f"<p style='color:black;'><strong>Q:</strong> {q}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='color:black;'>A: {a}</p>", unsafe_allow_html=True)
+                st.markdown("---")
+
         else:
             st.info("No chat history yet.")
 
