@@ -308,7 +308,7 @@ def main():
                         return summary
 
 
-                with  expander("✂️ Summarize Answer"):
+            with  expander("✂️ Summarize Answer"):
                         a_short = summarize_text(answer)
                     st.markdown(f"<p style='color:black;'>📌 {a_short}</p>", unsafe_allow_html=True)
             except Exception as e:
