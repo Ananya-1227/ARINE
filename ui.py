@@ -53,7 +53,7 @@ def summarize_text(answer,num_sentences=4):
                         return summary
 
 
-
+global a_short
 
 # PayU merchant details
 MERCHANT_KEY = "V6alJT"
@@ -122,6 +122,8 @@ def init_session_state():
         st.session_state.chat_history = []
     if "processing_query" not in st.session_state:
         st.session_state.processing_query = False
+    if "short_ans" not in st.session_state:
+        st.session_state.short_ans = []
 
 init_session_state()
 
@@ -282,6 +284,7 @@ def main():
                 # context = query_faiss(query)
                 # answer = gemini_answer(f"Based on this context:\n{context}\n\nAnswer this question:\n{query
                 answer = gemini_answer(query)
+                a_short = summarize_text(answer)
         
                 # Black colored display with truncation
                 st.markdown(f"<div style='color:black;'><strong>Q:</strong> {query}</div>", unsafe_allow_html=True)
@@ -321,7 +324,6 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = get_user_chat_history(email)
     with  st.expander("✂️ Summarize Answer"):
-            a_short = summarize_text({a})
             st.markdown(f"<p style='color:black;'>📌 {a_short}</p>", unsafe_allow_html=True)
     if st.session_state.chat_history:
         with st.expander("💬 Chat History"):
