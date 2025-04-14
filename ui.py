@@ -286,7 +286,7 @@ def main():
                 #     elaborated = gemini_answer(f"Elaborate this: {answer}")
                 #     st.markdown(f"<div style='color:black;'>🧠 {elaborated}</div>", unsafe_allow_html=True)
                 def summarize_text(answer,num_sentences=4):
-                       answer = answer.translate(str.maketrans('', '', string.punctuation))
+                        answer = answer.translate(str.maketrans('', '', string.punctuation))
                         sentences = text.split('.')
                         sentences = [s.strip() for s in sentences if s]  # Remove empty sentences
                         # 2. Calculate word frequencies
