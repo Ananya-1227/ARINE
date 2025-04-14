@@ -219,7 +219,10 @@ def main():
 
     col1,col2=st.columns([8,2])
     with col1:
-        st.markdown(f"Welcome! , **{name}**")
+        # Replace all display outputs with:
+        st.markdown(f"<div style='color:black;'>Welcome! {name}</div>", 
+            unsafe_allow_html=True)
+        # st.markdown(f"Welcome! , **{name}**")
     with col2:
         if st.button("🚪Sign Out"):
             for key in list(st.session_state.keys()):
@@ -257,8 +260,8 @@ def main():
                 answer = gemini_answer(query)
         
                 # Black colored display with truncation
-                st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='color:black;'><strong>A:</strong> {answer}</p>", unsafe_allow_html=True)
+                st.markdown(f"<div style='color:black;'><strong>Q:</strong> {query}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='color:black;'><strong>A:</strong> {answer}</div>", unsafe_allow_html=True)
                 # Save to history (also in black)
                 st.session_state.chat_history.append((query, answer))
                 # # Optional: Add "Show Full Answer" button
@@ -281,7 +284,7 @@ def main():
 
                 # if st.button("📝 Elaborate Answer"):
                 #     elaborated = gemini_answer(f"Elaborate this: {answer}")
-                #     st.markdown(f"<p style='color:black;'>🧠 {elaborated}</p>", unsafe_allow_html=True)
+                #     st.markdown(f"<div style='color:black;'>🧠 {elaborated}</div>", unsafe_allow_html=True)
 
                 # if st.button("✂️ Summarize Answer"):
                 #     summary = gemini_answer(f"Summarize this: {answer}")
@@ -299,8 +302,8 @@ def main():
     if st.session_state.chat_history:
         with st.expander("💬 Chat History"):
             for q, a in st.session_state.chat_history[-10:]:
-                st.markdown(f"<p style='color:black;'><strong>Q:</strong> {q}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='color:black;'><strong>A:</strong> {a}</p>", unsafe_allow_html=True)
+                st.markdown(f"<div style='color:black;'><strong>Q:</strong> {query}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='color:black;'><strong>A:</strong> {answer}</div>", unsafe_allow_html=True)
                 st.markdown("<hr>", unsafe_allow_html=True)
 
 
