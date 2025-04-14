@@ -1,7 +1,6 @@
 import streamlit as st
 from streamlit_oauth import OAuth2Component
-from my_search import query_faiss
-from gemini import gemini_answer
+from my_search import query_faiss,search_and_respond
 from db import (
     init_db,
     get_user_by_email,
@@ -286,8 +285,7 @@ def main():
             try:
                 # context = query_faiss(query)
                 # answer = gemini_answer(f"Based on this context:\n{context}\n\nAnswer this question:\n{query
-                answer = gemini_answer(query)
-                a_short = summarize_text(answer)
+                answer = search_and_respond(query)
         
                 # Black colored display with truncation
                 st.markdown(f"<div style='color:black;'><strong>Q:</strong> {query}</div>", unsafe_allow_html=True)
