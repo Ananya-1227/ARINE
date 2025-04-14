@@ -247,9 +247,11 @@ def main():
     if query and (subscribed or st.session_state.query_count < FREE_QUERY_LIMIT):
         with st.spinner("Searching for answers..."):
             try:
-                context = query_faiss(query)
-                answer = gemini_answer(f"Based on this context:\n{context}\n\nAnswer this question:\n{query}")
+                # context = query_faiss(query)
+                # answer = gemini_answer(f"Based on this context:\n{context}\n\nAnswer this question:\n{query
+                answer = gemini_answer(query)
                 save_chat(email, query, answer)
+                st.session_state.chat_history.append((query,answer))
 
                 if not subscribed:
                     increment_prompt_count(email)
