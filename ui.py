@@ -302,8 +302,8 @@ def main():
     if st.session_state.chat_history:
         with st.expander("💬 Chat History"):
             for q, a in st.session_state.chat_history[-10:]:
-                st.markdown(f"<div style='color:black;'><strong>Q:</strong> {query}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div style='color:black;'><strong>A:</strong> {answer}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='color:black;'><strong>Q:</strong> {q}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='color:black;'><strong>A:</strong> {a}</div>", unsafe_allow_html=True)
                 st.markdown("<hr>", unsafe_allow_html=True)
 
 
