@@ -9,7 +9,8 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))  # Ensure this key is set i
 def gemini_answer(prompt: str) -> str:
     try:
         model = genai.GenerativeModel("gemini-1.5-pro-latest")  # Use the correct model name
-        response = model.generate_content(prompt)
-        return f'<span style="color:black;">{response.text.strip()}</span>'
+        response = model.generate_content(prompt,generation_config={"temperature":0.4})
+        clean_text=re.sub(r'<[^>]+>','',response.text)
+        return clean_text.strip()
     except Exception as e:
-        return f'<span style="color:black;">Gemini Error: {str(e)}</span>'
+        return f"Error: {str(e)}"
