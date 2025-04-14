@@ -11,11 +11,11 @@ import google.generativeai as genai
 
 # Load Gemini API
 genai.configure(api_key="YOUR_GEMINI_API_KEY")  # <-- Replace with your key
-model = genai.GenerativeModel("gemini-1.5-pro-latest")  # Or a more suitable model
+model_gemini = genai.GenerativeModel("gemini-1.5-pro-latest")  # Or a more suitable model
 
 # Load embedding model
 tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
-model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+embedding_model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 # Load FAISS index and chunks
 index = faiss.read_index("chunk_index.faiss")
 with open("chunk_texts.pkl", "rb") as f:
@@ -26,7 +26,7 @@ with open("chunk_texts.pkl", "rb") as f:
 def get_embedding(text):
     inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
     with torch.no_grad():
-        outputs = model(**inputs)
+        outputs = embedding_model(**inputs)
     embeddings = outputs.last_hidden_state
     input_mask_expanded = inputs['attention_mask'].unsqueeze(-1).expand(embeddings.size()).float()
     sum_embeddings = torch.sum(embeddings * input_mask_expanded, 1)
