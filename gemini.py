@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def query_gemini(prompt):
+def gemini_answer(prompt):
     api_key = os.getenv("GEMINI_API_KEY")
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={api_key}"
 
