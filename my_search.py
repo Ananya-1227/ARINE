@@ -66,21 +66,21 @@ def search_chunks(query: str, index: faiss.Index, chunks: List[str], top_k: int 
     
 
 
-# # Function to convert text to embedding
-# def get_embedding(text):
-#     inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
-#     with torch.no_grad():
-#         outputs = model(**inputs)
-#     embeddings = outputs.last_hidden_state
-#     input_mask_expanded = inputs['attention_mask'].unsqueeze(-1).expand(embeddings.size()).float()
-#     sum_embeddings = torch.sum(embeddings * input_mask_expanded, 1)
-#     sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
-#     return (sum_embeddings / sum_mask).squeeze().numpy()
+# Function to convert text to embedding
+def get_embedding(text):
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
+    with torch.no_grad():
+        outputs = model(**inputs)
+    embeddings = outputs.last_hidden_state
+    input_mask_expanded = inputs['attention_mask'].unsqueeze(-1).expand(embeddings.size()).float()
+    sum_embeddings = torch.sum(embeddings * input_mask_expanded, 1)
+    sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+    return (sum_embeddings / sum_mask).squeeze().numpy()
 
-# # Load the FAISS index and text chunks
-# index = faiss.read_index("chunk_index.faiss")
-# with open("chunk_texts.pkl", "rb") as f:
-#     chunks = pickle.load(f)
+# Load the FAISS index and text chunks
+index = faiss.read_index("chunk_index.faiss")
+with open("chunk_texts.pkl", "rb") as f:
+    chunks = pickle.load(f)
 
 # # Function to query the FAISS index
 # def query_faiss(query, top_k=3):
