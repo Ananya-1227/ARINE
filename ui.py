@@ -246,52 +246,44 @@ def main():
     query = st.chat_input("Ask a question...")
     if query and (subscribed or st.session_state.query_count < FREE_QUERY_LIMIT):
         with st.spinner("Searching for answers..."):
-    try:
-        context = query_faiss(query)
-        answer = gemini_answer(f"Based on this context:\n{context}\n\nAnswer this question:\n{query}")
-        save_chat(email, query, answer)
-        st.session_state.chat_history = st.session_state.get("chat_history", [])
-        st.session_state.chat_history.append((query, answer, datetime.now().strftime("%Y-%m-%d %H:%M")))
+            try:
+                context = query_faiss(query)
+                answer = gemini_answer(f"Based on this context:\n{context}\n\nAnswer this question:\n{query}")
+                save_chat(email, query, answer)
 
-        if not subscribed:
-            increment_prompt_count(email)
-            st.session_state.query_count += 1
+                if not subscribed:
+                    increment_prompt_count(email)
+                    st.session_state.query_count += 1
 
-        st.success("✅ Answer generated!")
-        st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color:black;'>A: {answer}</p>", unsafe_allow_html=True)
-
-        if st.button("📝 Elaborate Answer"):
-            elaborated = gemini_answer(f"Elaborate this: {answer}")
-            st.markdown(f"🧠 {elaborated}")
-        if st.button("✂️ Summarize Answer"):
-            summary = gemini_answer(f"Summarize this: {answer}")
-            st.markdown(f"📌 {summary}")
-
-    except Exception as e:
-        st.error(f"Failed to process query: {str(e)}")
-
-    elif query:
-        st.error("🛑 Free limit reached. Please subscribe to continue.")
-        st.link_button("🔗 Subscribe Now", "https://pmny.in/YrI6O1HHr1Na")
-
-   if "chat_history" in st.session_state and st.session_state.chat_history:
-    for i, chat in enumerate(st.session_state.chat_history):
-        if len(chat) == 3:
-            q, answer, timestamp = chat
-            with st.container():
-                st.markdown(f"**Q{i+1}** ({timestamp}):")
-                st.markdown(f"<p style='color:black;'><strong>Q:</strong> {q}</p>", unsafe_allow_html=True)
+                st.success("✅ Answer generated!")
+                st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
                 st.markdown(f"<p style='color:black;'>A: {answer}</p>", unsafe_allow_html=True)
+
+                if st.button("📝 Elaborate Answer"):
+                    elaborated = gemini_answer(f"Elaborate this: {answer}")
+                    st.markdown(f"🧠 {elaborated}")
+                if st.button("✂️ Summarize Answer"):
+                    summary = gemini_answer(f"Summarize this: {answer}")
+                    st.markdown(f"📌 {summary}")
+
+            except Exception as e:
+                st.error(f"Failed to process query: {str(e)}")
+
+        elif query:
+            st.error("🛑 Free limit reached. Please subscribe to continue.")
+            st.link_button("🔗 Subscribe Now", "https://pmny.in/YrI6O1HHr1Na")
+    # Show past interactions
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = get_user_chat_history(email)
+
+    if st.session_state.chat_history:
+        with st.expander("💬 Chat History"):
+            for q, a in st.session_state.chat_history[-10:]:
+                st.markdown(f"**Q:** {q}")
+                st.markdown(f"**A:** {a}")
                 st.markdown("---")
-        else:
-            st.warning(f"Skipping malformed chat entry #{i+1}: {chat}")
-else:
-    st.info("No chat history yet.")
 
 
-        else:
-            st.info("No chat history yet.")
 
 if __name__ == "__main__":
     main()
