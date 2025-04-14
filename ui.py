@@ -30,6 +30,30 @@ def truncate_text(text, word_limit=100):
     words = text.split()
     return " ".join(words[:word_limit]) + "..." if len(words) > word_limit else text
 
+def summarize_text(answer,num_sentences=4):
+                        answer = answer.translate(str.maketrans('', '', string.punctuation))
+                        sentences = text.split('.')
+                        sentences = [s.strip() for s in sentences if s]  # Remove empty sentences
+                        # 2. Calculate word frequencies
+                        words = [word.lower() for sentence in sentences for word in sentence.split()]
+                        word_frequency = Counter(words)
+                        sentence_scores = {}
+                        for i, sentence in enumerate(sentences):
+                            for word in sentence.lower().split():
+                                if word in word_frequency:
+                                    if i not in sentence_scores:
+                                        sentence_scores[i] = word_frequency[word]
+                                    else:
+                                        sentence_scores[i] += word_frequency[word]
+                    
+                        # 4. Get the top N sentences
+                        top_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
+                        summary_sentences = [sentences[i] for i in top_sentences]
+                        summary = '. '.join(summary_sentences)
+                        return summary
+
+
+
 
 # PayU merchant details
 MERCHANT_KEY = "V6alJT"
@@ -285,29 +309,7 @@ def main():
                 # if st.button("📝 Elaborate Answer"):
                 #     elaborated = gemini_answer(f"Elaborate this: {answer}")
                 #     st.markdown(f"<div style='color:black;'>🧠 {elaborated}</div>", unsafe_allow_html=True)
-                def summarize_text(answer,num_sentences=4):
-                        answer = answer.translate(str.maketrans('', '', string.punctuation))
-                        sentences = text.split('.')
-                        sentences = [s.strip() for s in sentences if s]  # Remove empty sentences
-                        # 2. Calculate word frequencies
-                        words = [word.lower() for sentence in sentences for word in sentence.split()]
-                        word_frequency = Counter(words)
-                        sentence_scores = {}
-                        for i, sentence in enumerate(sentences):
-                            for word in sentence.lower().split():
-                                if word in word_frequency:
-                                    if i not in sentence_scores:
-                                        sentence_scores[i] = word_frequency[word]
-                                    else:
-                                        sentence_scores[i] += word_frequency[word]
-                    
-                        # 4. Get the top N sentences
-                        top_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
-                        summary_sentences = [sentences[i] for i in top_sentences]
-                        summary = '. '.join(summary_sentences)
-                        return summary
-
-
+                
         
             except Exception as e:
                 st.error(f"Failed to process query: {str(e)}")
@@ -319,7 +321,7 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = get_user_chat_history(email)
     with  st.expander("✂️ Summarize Answer"):
-            a_short = summarize_text(answer)
+            a_short = summarize_text(a)
             st.markdown(f"<p style='color:black;'>📌 {a_short}</p>", unsafe_allow_html=True)
     if st.session_state.chat_history:
         with st.expander("💬 Chat History"):
