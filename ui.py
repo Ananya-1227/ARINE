@@ -278,8 +278,6 @@ def main():
                     st.session_state.query_count += 1
 
                 st.success("✅ Answer generated!")
-                st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='color:black;'>A: {ans}</p>", unsafe_allow_html=True)
 
                 # if st.button("📝 Elaborate Answer"):
                 #     elaborated = gemini_answer(f"Elaborate this: {answer}")
