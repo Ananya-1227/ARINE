@@ -26,6 +26,11 @@ from typing import Optional, Dict, List, Tuple  # Add this
 # Initialize DB
 init_db()
 
+def truncate_text(text, word_limit=100):
+    words = text.split()
+    return " ".join(words[:word_limit]) + "..." if len(words) > word_limit else text
+
+
 # PayU merchant details
 MERCHANT_KEY = "V6alJT"
 MERCHANT_SALT = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDULOIP8oYe4bnIFX8xdsCxzq6UopwZMNVOKLs8IaMXA1lacMJmaXjgDYPZPfVEHAW18Gk5zNObycolZlBd2JlaNmn5sYQmfFWND0MO24Qp8sgZWU1yERUAJgCII8l9sVDD8H31axa35L7v1VSMAzTsI2gNEteBlCcPz+PFWEu8wMrEFMndGHCS2P7/yPBJnoZbzmU4nfZcYrNEQSndiJTs4F4Utd9dH3F8dO9PzrcDUjB0xdf58uBeRF7Ml/L73lKgf1vsy1YBlcMnN7oR5NvmfAGCxgvBNPh7QAsBSNnJ12rtMSMY7bS8AIh+lr8RFnGngJQcCbD3EvcbB5GF9n1LAgMBAAECggEAONcxVJ5fKeTE1YJUydaLdtbs1Crf8KuxaTfmOQy12VNvW5g7rB3zYOqd+NPtYeqz6PLX7cEeq2yat/w56Xo+Uvmi2F6jDYBfluOQzmkmdepxisDuy3EiFCEaIV6c+wxGm8dQpy+iLW+dazjWZo/xXJV7qYzzqOYctNK3rUWjPJRYcFvNnljMudXw5PlNEtDgVslbwi3l8Lq7Jm5LAKMyD7jnrnWHFNfLcguKRuhTC3jtXOHHPQnLLue3pORYcvbsD6t/jPAtrsBKKxxJncwcRvS1+F2PeBiMav1ZXK0W2xlKrBU3ykWotDSb6eS9540L6aWBdWCpIN7RUzV3ydpZOQKBgQD15bINTf5GbEy4QcYNanVEyaEDZRpmfa39XipXR2dHPH5nKsY4yJty1c+Jt75d2t8p9bureIscTyWPKYL+0kiGqIIZIYiXEK5iGUZICOAXC4ic+ZXtmzKV7+bGD8czik9WEq69ncqAUnuMe6P8bFGhDpHknhMEV9XP5VrQk4swlQKBgQDc5IGXKAXABS09pRbgTcJmIXSS1whwB8GlTZu8xi+6gj+mOzy36WEZFrslqf1kwL/Em21SzE7QfI2EZ4Su//cgBR5iywgIjB6r91m0QuFdcf8PBEnMJkWCPFoQ7qvPZKrcVPLCkvTaEd44CNRY3kNBVAQeQGpEBjJYggY84aYeXwKBgQCMTrNJGi6z2knwfT9YGl2tkWs5d7AXuTDVOKzqPkj1AdSSY3rVncntPYj9aQXLof7if1/FWLPvxE2HIcWoRy6w/2e0lUjOAeuu+AL9SWssWx1pjJR7DqpPmaLRcuFUTGA2mdRxR57rl6T9pPMOLnRpdNnUXEo3mTLcPF+UUgwC/QKBgAGohYCJAGIMp+ZKkv1kGA2EOsfPbXTJ2h5Pkte79SfFSo0I7M/EpMH3dbg2qnxTJh1nvU5d0kmmZbmUvV5C9av73dqIA6tswd4woS/FQMPe0zddpOAveV4c7eAqqoeIDfBRgvELAWORtsVc65svL/oRk2ZWvXV9Rmt7rmhOmVypAoGAPuZowns5Ng3fFEvZlYzKXsurLNY7jmLP24674E/Kg240bziUu2qlsF3v+En/sBfV4Lf7S6GSMvVh+0BKt4l6a+1gIFbV7V4iUsv9JdukhHkD6DuomXXAs63Jym8ZNE4B34/mJXoluO5rPQ3Kc9UguXK4/tCoOTEcdB21mgw33Ew="
@@ -250,8 +255,23 @@ def main():
                 # context = query_faiss(query)
                 # answer = gemini_answer(f"Based on this context:\n{context}\n\nAnswer this question:\n{query
                 answer = gemini_answer(query)
+                ans=truncate_text(answer,word_limit=100)
+                # Black colored display with truncation
+                st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='color:black;'><strong>A:</strong> {short_answer}</p>", unsafe_allow_html=True)
                 # Save to history (also in black)
-                st.session_state.chat_history.append((query, answer))
+                st.session_state.chat_history.append((query, ans))
+                # Optional: Add "Show Full Answer" button
+                if 'show_full_answer' not in st.session_state:
+                    st.session_state.show_full_answer = False
+                
+                if not st.session_state.show_full_answer and len(answer.split()) > 100:
+                    if st.button("🔍 Show Full Answer"):
+                        st.session_state.show_full_answer = True
+                
+                if st.session_state.show_full_answer:
+                    st.markdown(f"<p style='color:black;'><strong>Full A:</strong> {answer}</p>", unsafe_allow_html=True)
+                                
 
                 if not subscribed:
                     increment_prompt_count(email)
@@ -259,7 +279,7 @@ def main():
 
                 st.success("✅ Answer generated!")
                 st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='color:black;'>A: {answer}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='color:black;'>A: {ans}</p>", unsafe_allow_html=True)
 
                 # if st.button("📝 Elaborate Answer"):
                 #     elaborated = gemini_answer(f"Elaborate this: {answer}")
