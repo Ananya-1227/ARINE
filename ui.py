@@ -250,8 +250,8 @@ def main():
                 # context = query_faiss(query)
                 # answer = gemini_answer(f"Based on this context:\n{context}\n\nAnswer this question:\n{query
                 answer = gemini_answer(query)
-                save_chat(email, query, answer)
-                st.session_state.chat_history.append((query,answer))
+                # Save to history (also in black)
+                st.session_state.chat_history.append((query, answer))
 
                 if not subscribed:
                     increment_prompt_count(email)
@@ -263,11 +263,11 @@ def main():
 
                 if st.button("📝 Elaborate Answer"):
                     elaborated = gemini_answer(f"Elaborate this: {answer}")
-                    st.markdown(f"🧠 {elaborated}")
+                    st.markdown(f"<p style='color:black;'>🧠 {elaborated}</p>", unsafe_allow_html=True)
+
                 if st.button("✂️ Summarize Answer"):
                     summary = gemini_answer(f"Summarize this: {answer}")
-                    st.markdown(f"📌 {summary}")
-
+                    st.markdown(f"<p style='color:black;'>📌 {summary}</p>", unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"Failed to process query: {str(e)}")
 
@@ -281,9 +281,9 @@ def main():
     if st.session_state.chat_history:
         with st.expander("💬 Chat History"):
             for q, a in st.session_state.chat_history[-10:]:
-                st.markdown(f"**Q:** {q}")
-                st.markdown(f"**A:** {a}")
-                st.markdown("---")
+                st.markdown(f"<p style='color:black;'><strong>Q:</strong> {q}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='color:black;'><strong>A:</strong> {a}</p>", unsafe_allow_html=True)
+                st.markdown("<hr>", unsafe_allow_html=True)
 
 
 
