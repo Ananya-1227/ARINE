@@ -1,4 +1,5 @@
 import os
+import re
 import google.generativeai as genai
 from dotenv import load_dotenv
 
@@ -11,6 +12,7 @@ def gemini_answer(prompt: str) -> str:
         model = genai.GenerativeModel("gemini-1.5-pro-latest")  # Use the correct model name
         response = model.generate_content(prompt,generation_config={"temperature":0.4})
         clean_text=re.sub(r'<[^>]+>','',response.text)
+        clean_text = re.sub(r'[\*\_]', '', clean_text)  # Remove * and stuff
         return clean_text.strip()
     except Exception as e:
         return f"Error: {str(e)}"
