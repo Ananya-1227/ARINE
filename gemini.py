@@ -11,8 +11,9 @@ def gemini_answer(prompt):
     if not api_key:
         return "❌ API key is missing. Please check your .env file."
 
-    # URL for Gemini API
-    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={api_key}"
+    # The correct API endpoint for Gemini
+    # You should replace 'models/gemini-pro' with the correct model ID after listing available models
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{your_model_id}:generateContent?key={api_key}"
 
     headers = {
         "Content-Type": "application/json"
