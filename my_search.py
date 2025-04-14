@@ -47,8 +47,9 @@ def get_answer_from_gemini(query, context_chunks):
     return response.text
 
 def search_and_respond(user_query):
-    top_chunks = query_faiss(user_query)
-    response = get_answer_from_gemini(user_query, top_chunks)
-    return response
-except Exception as e:
-    return f"Failed to process query: {str(e)}"
+    try:
+        top_chunks = query_faiss(user_query)
+        response = get_answer_from_gemini(user_query, top_chunks)
+        return response
+    except Exception as e:
+        return f"Failed to process query: {str(e)}"
