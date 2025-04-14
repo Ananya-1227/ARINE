@@ -258,7 +258,7 @@ def main():
                 ans=truncate_text(answer,word_limit=100)
                 # Black colored display with truncation
                 st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='color:black;'><strong>A:</strong> {short_answer}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='color:black;'><strong>A:</strong> {ans}</p>", unsafe_allow_html=True)
                 # Save to history (also in black)
                 st.session_state.chat_history.append((query, ans))
                 # Optional: Add "Show Full Answer" button
