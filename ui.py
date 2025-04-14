@@ -261,13 +261,13 @@ def main():
                 st.markdown(f"<p style='color:black;'><strong>Q:</strong> {query}</p>", unsafe_allow_html=True)
                 st.markdown(f"<p style='color:black;'>A: {answer}</p>", unsafe_allow_html=True)
 
-                if st.button("📝 Elaborate Answer"):
-                    elaborated = gemini_answer(f"Elaborate this: {answer}")
-                    st.markdown(f"<p style='color:black;'>🧠 {elaborated}</p>", unsafe_allow_html=True)
+                # if st.button("📝 Elaborate Answer"):
+                #     elaborated = gemini_answer(f"Elaborate this: {answer}")
+                #     st.markdown(f"<p style='color:black;'>🧠 {elaborated}</p>", unsafe_allow_html=True)
 
-                if st.button("✂️ Summarize Answer"):
-                    summary = gemini_answer(f"Summarize this: {answer}")
-                    st.markdown(f"<p style='color:black;'>📌 {summary}</p>", unsafe_allow_html=True)
+                # if st.button("✂️ Summarize Answer"):
+                #     summary = gemini_answer(f"Summarize this: {answer}")
+                #     st.markdown(f"<p style='color:black;'>📌 {summary}</p>", unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"Failed to process query: {str(e)}")
 
