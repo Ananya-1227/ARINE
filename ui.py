@@ -269,7 +269,7 @@ def main():
             except Exception as e:
                 st.error(f"Failed to process query: {str(e)}")
 
-        elif query:
+    elif query:
             st.error("🛑 Free limit reached. Please subscribe to continue.")
             st.link_button("🔗 Subscribe Now", "https://pmny.in/YrI6O1HHr1Na")
     # Show past interactions
