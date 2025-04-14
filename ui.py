@@ -278,6 +278,7 @@ def main():
 
     # --- Query Input ---
     query = st.chat_input("Ask a question...")
+    a_short = ""  # Initialize a_short here!
     if query and (subscribed or st.session_state.query_count < FREE_QUERY_LIMIT):
         with st.spinner("Searching for answers..."):
             try:
