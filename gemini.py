@@ -1,16 +1,25 @@
 import os
+import requests
 from dotenv import load_dotenv
-import google.generativeai as genai
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+def query_gemini(prompt):
+    api_key = os.getenv("GEMINI_API_KEY")
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={api_key}"
 
-model = genai.GenerativeModel("gemini-pro")
+    headers = {
+        "Content-Type": "application/json"
+    }
 
-def gemini_answer(prompt: str) -> str:
-    try:
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        return f"❌ Gemini Error: {str(e)}"
+    data = {
+        "contents": [{
+            "parts": [{"text": prompt}]
+        }]
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 200:
+        return response.json()['candidates'][0]['content']['parts'][0]['text']
+    else:
+        return f"❌ Gemini Error: {response.status_code} {response.text}"
