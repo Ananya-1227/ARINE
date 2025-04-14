@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_oauth import OAuth2Component
 from my_search import query_faiss
+from gemini import gemini_answer
 from db import (
     init_db,
     get_user_by_email,
@@ -20,7 +21,7 @@ import hashlib
 import datetime
 from datetime import datetime 
 from typing import Optional, Dict, List, Tuple  # Add this 
-from gemini import gemini_answer
+
 
 # Initialize DB
 init_db()
