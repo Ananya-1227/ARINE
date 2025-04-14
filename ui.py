@@ -89,6 +89,15 @@ st.markdown("""
     .css-1dp5vir {padding-top: 1rem;}  /* optional: fix top padding */
     </style>
 """, unsafe_allow_html=True)
+# HIDE Streamlit's footer and "Manage App" button
+hide_streamlit_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    .stDeployButton {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 def get_base64_image(image_path: str) -> str:
     """Convert image to base64 for embedding in HTML."""
