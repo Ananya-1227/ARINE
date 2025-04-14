@@ -11,11 +11,10 @@ def gemini_answer(prompt):
     if not api_key:
         return "❌ API key is missing. Please check your .env file."
 
-    # Replace 'your_model_id' with the actual model ID from the available models.
-    # This model ID needs to be verified using ListModels or the Gemini API documentation.
-    model_id = "models/gemini-v1"  # Replace with the actual model ID
+    # ✅ CORRECT MODEL: Use 'gemini-pro' (text model) or 'gemini-pro-vision' (multimodal)
+    model_id = "models/gemini-pro"  
 
-    # The correct API endpoint for Gemini
+    # ✅ CORRECT API ENDPOINT (v1beta)
     url = f"https://generativelanguage.googleapis.com/v1beta/{model_id}:generateContent?key={api_key}"
 
     headers = {
@@ -38,3 +37,7 @@ def gemini_answer(prompt):
     else:
         return f"❌ Gemini Error: {response.status_code} {response.text}"
 
+# Test the function
+if __name__ == "__main__":
+    test_prompt = "Explain quantum computing in simple terms."
+    print(gemini_answer(test_prompt))
