@@ -7,14 +7,14 @@ load_dotenv()
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))  # Ensure this key is set in your environment
 
-def gemini_answer(prompt: str,max_tokens=200) -> str:
+def gemini_answer(prompt: str,max_tokens=500) -> str:
     try:
         model = genai.GenerativeModel("gemini-1.5-pro-latest")  # Use the correct model name
         response = model.generate_content(prompt,generation_config=genai.types.GenerationConfig(
-            max_output_tokens=max_tokens,
+            # max_output_tokens=max_tokens,
             temperature=0.3,
-            top_p=0.7,
-            stop_sequences=["\n\n"]
+            # top_p=0.7,
+            # stop_sequences=["\n\n"]
             )
         )
         clean_text=re.sub(r'<[^>]+>','',response.text)
