@@ -28,13 +28,13 @@ from typing import Optional, Dict, List, Tuple  # Add this
 # Initialize DB
 init_db()
 
-def truncate_text(text, word_limit=100):
-    words = text.split()
-    return " ".join(words[:word_limit]) + "..." if len(words) > word_limit else text
+# def truncate_text(text, word_limit=100):
+#     words = text.split()
+#     return " ".join(words[:word_limit]) + "..." if len(words) > word_limit else text
 
 def summarize_text(answer,num_sentences=4):
                         answer = answer.translate(str.maketrans('', '', string.punctuation))
-                        sentences = text.split('.')
+                        sentences = answer.split('.')
                         sentences = [s.strip() for s in sentences if s]  # Remove empty sentences
                         # 2. Calculate word frequencies
                         words = [word.lower() for sentence in sentences for word in sentence.split()]
