@@ -39,7 +39,7 @@ def query_faiss(query, top_k=3):
     results = [chunks[i] for i in indices[0]]
     return results
 
-def get_answer_from_gemini(query, context_chunks,max_output_tokens=200):
+def get_answer_from_gemini(query, context_chunks,max_output_tokens=300):
     context = "\n\n".join(context_chunks)
     prompt = f"""You are an assistant with access to the following context:\n\n{context}\n\nUser question: {query}\n\nPlease answer the question based only on the context above."""
     global model_gemini
@@ -49,7 +49,7 @@ def get_answer_from_gemini(query, context_chunks,max_output_tokens=200):
 def search_and_respond(user_query):
     try:
         top_chunks = query_faiss(user_query)  # ✅ removed max_output_tokens here
-        response = get_answer_from_gemini(user_query, top_chunks, max_output_tokens=200)
+        response = get_answer_from_gemini(user_query, top_chunks, max_output_tokens=300)
         return response
     except Exception as e:
         return f"Failed to process query: {str(e)}"
