@@ -46,9 +46,18 @@ def get_answer_from_gemini(query, context_chunks,max_output_tokens=200):
     response = model_gemini.generate_content(prompt)
     return response.text
 
+# def search_and_respond(user_query):
+#     try:
+#         top_chunks = query_faiss(user_query)  # ✅ removed max_output_tokens here
+#         response = get_answer_from_gemini(user_query, top_chunks, max_output_tokens=200)
+#         return response
+#     except Exception as e:
+#         return f"Failed to process query: {str(e)}"
+
+
 def search_and_respond(user_query):
     try:
-        top_chunks = query_faiss(user_query,max_output_tokens=200)
+        top_chunks = query_faiss(user_query)
         response = get_answer_from_gemini(user_query, top_chunks,max_output_tokens=max_output_tokens)
         return response
     except Exception as e:
