@@ -43,17 +43,13 @@ def get_answer_from_gemini(query, context_chunks,max_output_tokens=200):
     context = "\n\n".join(context_chunks)
     prompt = f"""You are an assistant with access to the following context:\n\n{context}\n\nUser question: {query}\n\nPlease answer the question based only on the context above."""
     global model_gemini
-    response = model_gemini.generate_content(prompt,
-                                            generation_config=genai.types.GenerationConfig(
-                                                max_output_tokens=max_output_tokens,
-                                                temperature=0.3
-                                            )
+    response = model_gemini.generate_content(prompt,generation_config=genai.types.GenerationConfig(max_output_tokens=max_output_tokens,temperature=0.3)
     return response.text
 
 def search_and_respond(user_query):
     try:
-        top_chunks = query_faiss(user_query)
-        response = get_answer_from_gemini(user_query, top_chunks)
+        top_chunks = query_faiss(user_query,max_output_tokens=200)
+        response = get_answer_from_gemini(user_query, top_chunks,max_output_tokens=max_output_tokens)
         return response
     except Exception as e:
         return f"Failed to process query: {str(e)}"
