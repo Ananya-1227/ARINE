@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_oauth import OAuth2Component
-from my_search import search_and_respond,get_embedding,query_faiss,get_answer_from_gemini
+from my_search import search_and_respond
 from db import (
     init_db,
     get_user_by_email,
