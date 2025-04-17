@@ -1,7 +1,8 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-import faissimport time
+import faiss
+import time
 import google.api_core.exceptions  # Make sure this is imported
 import pickle
 import torch
