@@ -1,7 +1,8 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-import faiss
+import faissimport time
+import google.api_core.exceptions  # Make sure this is imported
 import pickle
 import torch
 from transformers import AutoTokenizer, AutoModel
@@ -39,12 +40,35 @@ def query_faiss(query, top_k=2):
     results = [chunks[i] for i in indices[0]]
     return results
 
-def get_answer_from_gemini(query, context_chunks,max_output_tokens=200):
+import time
+import google.api_core.exceptions  # Make sure this is imported
+
+def get_answer_from_gemini(query, context_chunks, max_output_tokens=200, retries=3):
     context = "\n\n".join(context_chunks)
     prompt = f"""You are an assistant with access to the following context:\n\n{context}\n\nUser question: {query}\n\nPlease answer the question based only on the context above."""
+    
     global model_gemini
-    response = model_gemini.generate_content(prompt)
-    return response.text
+
+    for attempt in range(retries):
+        try:
+            response = model_gemini.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    max_output_tokens=max_output_tokens
+                )
+            )
+            return response.text
+
+        except google.api_core.exceptions.DeadlineExceeded as e:
+            print(f"[Attempt {attempt+1}] DeadlineExceeded: Retrying in 2s...")
+            time.sleep(2)
+        
+        except Exception as e:
+            print(f"[Attempt {attempt+1}] Other error: {e}")
+            return f"Gemini error: {str(e)}"
+
+    return "Gemini API timed out after multiple attempts. Try a shorter query or fewer context chunks."
+
 
 def search_and_respond(user_query):
     try:
