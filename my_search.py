@@ -49,7 +49,7 @@ def get_answer_from_gemini(query, context_chunks,max_output_tokens=300):
 def search_and_respond(user_query):
     try:
         top_chunks = query_faiss(user_query)  # ✅ removed max_output_tokens here
-        response = get_answer_from_gemini(user_query, top_chunks, max_output_tokens=300)
+        response = get_answer_from_gemini(user_query, top_chunks, max_output_tokens=200)
         return response
     except Exception as e:
         return f"Failed to process query: {str(e)}"
