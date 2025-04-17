@@ -33,13 +33,13 @@ def get_embedding(text):
     sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
     return (sum_embeddings / sum_mask).squeeze().numpy()
 
-def query_faiss(query, top_k=3):
+def query_faiss(query, top_k=2):
     query_vector = get_embedding(query).astype("float32").reshape(1, -1)
     distances, indices = index.search(query_vector, top_k)
     results = [chunks[i] for i in indices[0]]
     return results
 
-def get_answer_from_gemini(query, context_chunks,max_output_tokens=300):
+def get_answer_from_gemini(query, context_chunks,max_output_tokens=200):
     context = "\n\n".join(context_chunks)
     prompt = f"""You are an assistant with access to the following context:\n\n{context}\n\nUser question: {query}\n\nPlease answer the question based only on the context above."""
     global model_gemini
