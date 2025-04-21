@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_oauth import OAuth2Component
-from my_search import search_and_respond
+# from my_search import search_and_respond
 from deepseek import deepseek_answer
 from db import (
     init_db,
