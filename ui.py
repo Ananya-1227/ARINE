@@ -326,7 +326,7 @@ def main():
                 #     elaborated = gemini_answer(f"Elaborate this: {answer}")
                 #     st.markdown(f"<div style='color:black;'>🧠 {elaborated}</div>", unsafe_allow_html=True)
                 
-             except Exception as e:
+            except Exception as e:
                 st.error(f"Failed to process query: {str(e)}")
 
     elif query:
