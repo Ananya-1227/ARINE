@@ -31,27 +31,25 @@ init_db()
 #     words = text.split()
 #     return " ".join(words[:word_limit]) + "..." if len(words) > word_limit else text
 
-def summarize_text(answer,num_sentences=4):
-                        answer = answer.translate(str.maketrans('', '', string.punctuation))
-                        sentences = answer.split('.')
-                        sentences = [s.strip() for s in sentences if s]  # Remove empty sentences
-                        # 2. Calculate word frequencies
-                        words = [word.lower() for sentence in sentences for word in sentence.split()]
-                        word_frequency = Counter(words)
-                        sentence_scores = {}
-                        for i, sentence in enumerate(sentences):
-                            for word in sentence.lower().split():
-                                if word in word_frequency:
-                                    if i not in sentence_scores:
-                                        sentence_scores[i] = word_frequency[word]
-                                    else:
-                                        sentence_scores[i] += word_frequency[word]
-                    
-                        # 4. Get the top N sentences
-                        top_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
-                        summary_sentences = [sentences[i] for i in top_sentences]
-                        summary = '. '.join(summary_sentences)
-                        return summary
+def summarize_text(answer, num_sentences=4):
+    answer = answer.translate(str.maketrans('', '', string.punctuation))
+    sentences = answer.split('.')
+    sentences = [s.strip() for s in sentences if s]
+    words = [word.lower() for sentence in sentences for word in sentence.split()]
+    word_frequency = Counter(words)
+    sentence_scores = {}
+    for i, sentence in enumerate(sentences):
+        for word in sentence.lower().split():
+            if word in word_frequency:
+                if i not in sentence_scores:
+                    sentence_scores[i] = word_frequency[word]
+                else:
+                    sentence_scores[i] += word_frequency[word]
+    
+    top_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)[:num_sentences]
+    summary_sentences = [sentences[i] for i in top_sentences]
+    summary = '. '.join(summary_sentences)
+    return summary
 
 
 global a_short
@@ -217,6 +215,21 @@ def fetch_user_info(access_token):
                         params={"access_token": access_token})
     return resp.json() if resp.ok else None
 
+# Helper function to use DeepSeek for answers
+def get_answer_from_deepseek(query: str) -> str:
+    """
+    Replace the search_and_respond function to use DeepSeek API for answering queries.
+    Assuming deepseek_answer is a function in the DeepSeek library that answers questions.
+    """
+    try:
+        # Call the DeepSeek API to process the query
+        answer = deepseek_answer(query)  # Replace with actual DeepSeek query logic
+        return answer
+    except Exception as e:
+        st.error(f"Error with DeepSeek API: {str(e)}")
+        return "Sorry, there was an error processing your query."
+
+
 # --- Main App Logic ---
 def main():
     st.title("📚🔍 ArInE")
@@ -294,24 +307,14 @@ def main():
             try:
                 # context = query_faiss(query)
                 # answer = gemini_answer(f"Based on this context:\n{context}\n\nAnswer this question:\n{query
-                answer = search_and_respond(query)
+                answer = get_answer_from_deepseek(query)
         
                 # Black colored display with truncation
                 st.markdown(f"<div style='color:black;'><strong>Q:</strong> {query}</div>", unsafe_allow_html=True)
                 st.markdown(f"<div style='color:black;'><strong>A:</strong> {answer}</div>", unsafe_allow_html=True)
                 # Save to history (also in black)
                 st.session_state.chat_history.append((query, answer))
-                # # Optional: Add "Show Full Answer" button
-                # if 'show_full_answer' not in st.session_state:
-                #     st.session_state.show_full_answer = False
-                
-                # if not st.session_state.show_full_answer and len(answer.split()) > 100:
-                #     if st.button("🔍 Show Full Answer"):
-                #         st.session_state.show_full_answer = True
-                
-                # if st.session_state.show_full_answer:
-                #     st.markdown(f"<p style='color:black;'><strong>Full A:</strong> {answer}</p>", unsafe_allow_html=True)
-                                
+               
 
                 if not subscribed:
                     increment_prompt_count(email)
@@ -323,8 +326,7 @@ def main():
                 #     elaborated = gemini_answer(f"Elaborate this: {answer}")
                 #     st.markdown(f"<div style='color:black;'>🧠 {elaborated}</div>", unsafe_allow_html=True)
                 
-        
-            except Exception as e:
+             except Exception as e:
                 st.error(f"Failed to process query: {str(e)}")
 
     elif query:
@@ -333,8 +335,6 @@ def main():
     # Show past interactions
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = get_user_chat_history(email)
-    with  st.expander("✂️ Summarize Answer"):
-            st.markdown(f"<p style='color:black;'>📌 {a_short}</p>", unsafe_allow_html=True)
     if st.session_state.chat_history:
         with st.expander("💬 Chat History"):
             for q, a in st.session_state.chat_history[-10:]:
