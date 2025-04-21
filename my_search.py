@@ -7,6 +7,7 @@ import google.api_core.exceptions  # Make sure this is imported
 import pickle
 import torch
 from transformers import AutoTokenizer, AutoModel
+from deepseek_api import deepseek_answer
 
 import google.generativeai as genai
 # ========== SETUP ==========
